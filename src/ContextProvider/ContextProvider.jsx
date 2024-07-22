@@ -7,6 +7,8 @@ const ContextProvider = ({ children }) => {
   const [selectedAvatar, setSelectedAvatar] = useState("");
   const [csrfToken, setCsrfToken] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+
 
   useEffect(() => {
     const fetchCsrfToken = async () => {
@@ -25,7 +27,7 @@ const ContextProvider = ({ children }) => {
 
         const data = await response.json();
         const token = data.csrfToken;
-        console.log('CSRF token', token)
+        console.log("CSRF token", token);
         setCsrfToken(token);
         localStorage.setItem("csrfToken", token);
       } catch (error) {
@@ -40,15 +42,16 @@ const ContextProvider = ({ children }) => {
     setAvatarUrl(
       `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
     );
+    console.log('Avatar preview URL:', setAvatarUrl); // kolla på denna den skickar inte med url korrekt. 
   };
 
   const handleSelect = () => {
     setSelectedAvatar(avatarUrl);
+    console.log('Avatar selected:', avatarUrl);
     alert("Avatar selected!");
   };
 
   const registerUser = async (username, password, email) => {
-
     try {
       const response = await fetch(
         "https://chatify-api.up.railway.app/auth/register",
@@ -82,13 +85,16 @@ const ContextProvider = ({ children }) => {
 
   const loginUser = async (username, password) => {
     try {
-      const response = await fetch('https://chatify-api.up.railway.app/auth/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ username, password, csrfToken })
-      });
+      const response = await fetch(
+        "https://chatify-api.up.railway.app/auth/token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, csrfToken }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -96,15 +102,23 @@ const ContextProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      sessionStorage.setItem('jwtToken', data.token);
+      sessionStorage.setItem("jwtToken", data.token);
+      console.log(sessionStorage.getItem("jwtToken"));
       setIsAuthenticated(true);
+      setUsername(username);
       return { success: true, data };
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       return { success: false, errors: { message: error.message } };
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("jwtToken");
+    setIsAuthenticated(false);
+    setUsername("");
+    setSelectedAvatar("");
+  };
 
   return (
     <Context.Provider
@@ -115,7 +129,9 @@ const ContextProvider = ({ children }) => {
         handleSelect,
         registerUser,
         loginUser,
-        isAuthenticated
+        isAuthenticated,
+        handleLogout,
+        username
       }}
     >
       {children}
