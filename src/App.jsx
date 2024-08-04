@@ -6,6 +6,7 @@ import Login  from "./comp/Login";
 import ContextProvider from "./ContextProvider/ContextProvider";
 import ProtectedRoute from "./comp/utils/ProtectedRoute"
 import Chat from "./comp/Chat";
+import Profile from "./comp/Profile"
 
 function App() {
   return <>
@@ -13,13 +14,21 @@ function App() {
   <Routes>
     <Route path="/" element={<Register />} />
     <Route path="/login" element={<Login />} />
-    <Route path="/protected"
+    <Route path="/chat"
     element={
       <ProtectedRoute>
        <Chat /> 
       </ProtectedRoute>
     }
     />
+      <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
   </Routes>
   </ContextProvider>
   </>;

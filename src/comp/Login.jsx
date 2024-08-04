@@ -18,7 +18,7 @@ const Login = () => {
       setSuccessMessage("Login successful. Redirecting...");
       setErrors(null);
       setTimeout(() => {
-        navigate("/protected");
+        navigate("/chat");
       }, 3000);
     } else {
       setErrors(result.errors);
