@@ -12,7 +12,7 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleLogin = async (event) => {
-    event.preventDefault(); // Correct the typo here
+    event.preventDefault(); 
     const result = await loginUser(username, password);
     if (result.success) {
       setSuccessMessage("Login successful. Redirecting...");
