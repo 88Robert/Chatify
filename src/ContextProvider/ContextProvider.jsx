@@ -114,7 +114,7 @@ const ContextProvider = ({ children }) => {
       const token = data.token;
       sessionStorage.setItem("jwtToken", token);
       const decodedJwt = decodeJwt(token);
-      setDecodedToken(decodedJwt); // TODO: lägg till useState, decoda token, skicka decodadToken från denna provider
+      setDecodedToken(decodedJwt); 
       console.log(decodedJwt);
       setIsAuthenticated(true);
       setUsername(username);
@@ -173,7 +173,7 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  const deleteProfile = async () => {
+  const deleteProfile = async (userId) => {
     try {
       const response = await fetch(
         `https://chatify-api.up.railway.app/users/${userId}`,

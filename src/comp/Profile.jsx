@@ -54,7 +54,7 @@ const Profile = () => {
         "Are you sure you want to delete your account? This action cannot be undone."
       )
     ) {
-      const result = await deleteProfile();
+      const result = await deleteProfile(userId);
       if (result.success) {
         alert("Account deleted successfully.");
       } else {
