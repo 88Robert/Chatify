@@ -10,6 +10,10 @@ const ContextProvider = ({ children }) => {
   const [username, setUsername] = useState("");
   const [decodedToken, setDecodedToken] = useState(null);
   const [email, setEmail] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [currentConversationId, setCurrentConversationId] = useState("");
 
   const fetchCsrfToken = async () => {
     try {
@@ -34,25 +38,28 @@ const ContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCsrfToken();
-  }, []);
+    fetchAllUsers();
+    fetchConversations();
+    }, []);
 
   const handlePreview = () => {
     setAvatarUrl(
       `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
     );
-    console.log("Avatar preview URL:", setAvatarUrl); // kolla på denna den skickar inte med url korrekt.
+    console.log("Avatar preview URL:", setAvatarUrl);
   };
 
   const handleSelect = () => {
     setSelectedAvatar(avatarUrl);
     console.log("Avatar selected:", avatarUrl);
-    alert("Avatar selected!"); // kolla på denna den skickar inte med url korrekt.
+    alert("Avatar selected!");
   };
 
   const decodeJwt = (token) => {
     try {
-      const payload = token.split(".")[1];
-      const decoded = JSON.parse(atob(payload));
+      const decoded = JSON.parse(
+        atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+      );
       return decoded;
     } catch (error) {
       console.error("Failed to decode JWT:", error);
@@ -114,7 +121,7 @@ const ContextProvider = ({ children }) => {
       const token = data.token;
       sessionStorage.setItem("jwtToken", token);
       const decodedJwt = decodeJwt(token);
-      setDecodedToken(decodedJwt); 
+      setDecodedToken(decodedJwt);
       console.log(decodedJwt);
       setIsAuthenticated(true);
       setUsername(username);
@@ -198,6 +205,170 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  const fetchMessages = async (conversationId) => {
+    try {
+      const response = await fetch( 
+       //"https://chatify-api.up.railway.app/messages?conversationId=46b5a9e3-afa1-4c40-861c-ad52ca0ff9eb",
+       //"https://chatify-api.up.railway.app/messages",
+        `https://chatify-api.up.railway.app/messages?conversationId=${conversationId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+          },
+        }
+      );
+      if (!response.ok) throw new Error("Failed to fetch messages.");
+      const data = await response.json();
+      setMessages(data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
+
+  const fetchConversations = async (conversationId) => {
+    try {
+      const response = await fetch(`https://chatify-api.up.railway.app/users/${conversationId}`, {
+        method: "GET",  // Explicitly specifying GET method
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversations");
+      }
+
+      const data = await response.json();
+      setConversations(data);  // Assuming the data contains an array of conversations
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+  const switchConversation = (conversationId) => {
+    setCurrentConversationId(conversationId);
+    fetchMessages(conversationId);
+  };
+
+
+  const sendMessage = async (messageContent) => {
+    try {
+      const response = await fetch(
+        "https://chatify-api.up.railway.app/messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+          },
+          body: JSON.stringify({ text: messageContent }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to send message:", errorData);
+        return { success: false, errors: errorData };
+      }
+
+      const res = await response.json();
+      return { success: true, latestMessage: res.latestMessage };
+    } catch (error) {
+      console.error("Error sending message:", error);
+      return { success: false, errors: { message: error.message } };
+    }
+  };
+
+  /*   const deleteMessage = (msgId) => {
+    console.log("Message with id " + msgId + " has been removed.");
+  }; */
+
+  const deleteMessage = async (msgId) => {
+    try {
+      const response = await fetch(
+        `https://chatify-api.up.railway.app/messages/${msgId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { success: false, errors: errorData };
+      }
+
+      setMessages((prevMessages) =>
+        prevMessages.filter((message) => message.id !== msgId)
+      );
+      return { success: true };
+    } catch (error) {
+      console.error("Failed to delete message:", error);
+      return { success: false, errors: { message: error.message } };
+    }
+  };
+
+  const fetchAllUsers = async () => {
+    try {
+      const response = await fetch("https://chatify-api.up.railway.app/users", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const data = await response.json();
+      setUsers(data); // Store users in state
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+    }
+  };
+
+  const generateUUID = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        const r = (Math.random() * 16) | 0,
+          v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
+  const sendInvitation = async (userId) => {
+    const conversationId = generateUUID();
+
+    try {
+      const response = await fetch(
+        `https://chatify-api.up.railway.app/invite/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+          },
+          body: JSON.stringify({ conversationId: conversationId }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send invitation");
+      }
+
+      const data = await response.json();
+      console.log("Invitation sent successfully:", data.message);
+    } catch (error) {
+      console.error("Error sending invitation:", error);
+    }
+  };
+
   return (
     <Context.Provider
       value={{
@@ -213,6 +384,17 @@ const ContextProvider = ({ children }) => {
         decodedToken,
         updateProfile,
         deleteProfile,
+        messages,
+        setMessages,
+        fetchMessages,
+        sendMessage,
+        deleteMessage,
+        users,
+        sendInvitation,
+        generateUUID,
+        switchConversation,
+        conversations,
+        currentConversationId,
       }}
     >
       {children}

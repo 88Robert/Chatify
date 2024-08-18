@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../ContextProvider/ContextProvider';
+import '../styles/Register.css';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -28,12 +29,12 @@ const Register = () => {
 
   return (
     <div>
-      <h2>Registrerar dig</h2>
-      <form onSubmit={handleSubmit}>
+      <h2 className='regTitle'>Registrerar dig</h2>
+      <form className='submitform' onSubmit={handleSubmit}>
         <div>
           <label>Användare</label>
           <br />
-          <input
+          <input className='label'
             type="text"
             name="username"
             value={username}
@@ -44,7 +45,7 @@ const Register = () => {
         <div>
           <label>Lösenord</label>
           <br />
-          <input
+          <input className='label'
             type="password"
             name="password"
             value={password}
@@ -55,7 +56,7 @@ const Register = () => {
         <div>
           <label>Email</label>
           <br />
-          <input
+          <input className='label'
             type="email"
             name="email"
             value={email}
@@ -65,25 +66,25 @@ const Register = () => {
         <br />
         <div className="avatar-container" style={{ textAlign: 'center', marginTop: '20px' }}>
           <h3>Välj din Avatar</h3>
-          <button type="button" onClick={(event) => { event.preventDefault(); handlePreview(); }}>
+          <button className='btn' type="button" onClick={(event) => { event.preventDefault(); handlePreview(); }}>
             Förhandsgranska Avatar
           </button>
           {avatarUrl && (
             <div className="avatar-preview" style={{ marginTop: '10px' }}>
-              <img src={avatarUrl} alt="Avatar Preview" />
+              <img className='avatar-img' src={avatarUrl} alt="Avatar Preview" />
               <br />
-              <button type="button" onClick={(event) => { event.preventDefault(); handleSelect(); }} style={{ marginTop: '10px' }}>
+              <button className='btn' type="button" onClick={(event) => { event.preventDefault(); handleSelect(); }} style={{ marginTop: '10px' }}>
                 Välj Avatar
               </button>
             </div>
           )}
         </div>
         <br />
-        <button type="submit">Registrera</button>
+        <button className='btn' type="submit">Registrera</button>
         <br />
         <br />
         <h5>Redan registrerad? Logga in</h5>
-        <button type="button" onClick={goToLogin}>Till Login</button>
+        <button className='btn' type="button" onClick={goToLogin}>Till Login</button>
       </form>
     </div>
   );

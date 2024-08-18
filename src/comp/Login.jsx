@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../ContextProvider/ContextProvider";
+import '../styles/Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -36,14 +37,15 @@ const Login = () => {
         <h2>Login</h2>
         <br />
         <br />
-        <input
+        <input className="input"
           type="text"
           placeholder="username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <br />
-        <input
+        <br />
+        <input className="input"
           type="password"
           placeholder="password"
           value={password}
@@ -51,7 +53,7 @@ const Login = () => {
         />
         <br />
         <br />
-        <button type="submit">Login</button>
+        <button className="button" type="submit">Login</button>
         {successMessage && (
           <div style={{ color: "green", marginTop: "20px" }}>
             {successMessage}
@@ -71,7 +73,7 @@ const Login = () => {
           </div>
         )}
         <h5>Tillbaka till registrering</h5>
-        <button type="button" onClick={goToRegister}>
+        <button className="button" type="button" onClick={goToRegister}>
           Tillbaka
         </button>
       </form>

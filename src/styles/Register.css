@@ -1,0 +1,18 @@
+.label {
+    border-radius: 10px;
+}
+
+.btn {
+    background-color: #286099;
+    border-radius: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.avatar-img {
+    border-radius: 50px;
+}
+
+h2, h3, h5 {
+    color: black;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
