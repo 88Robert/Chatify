@@ -1,11 +1,14 @@
 .input {
     border-radius: 10px;
+    margin-left: 10px;
+    padding-left: 5px;
 }
 
 .button {
-    background-color: #286099;
+    background-color: #4675a4;
     border-radius: 10px;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 5px;
 }
 
 h2, h5 {

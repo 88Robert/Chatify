@@ -226,9 +226,9 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  const fetchConversations = async (conversationId) => {
+  const fetchConversations = async () => {
     try {
-      const response = await fetch(`https://chatify-api.up.railway.app/users/${conversationId}`, {
+      const response = await fetch(`https://chatify-api.up.railway.app/messages?conversationId=46b5a9e3-afa1-4c40-861c-ad52ca0ff9eb`, {
         method: "GET",  // Explicitly specifying GET method
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,

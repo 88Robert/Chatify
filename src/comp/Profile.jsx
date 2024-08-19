@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Context } from "../ContextProvider/ContextProvider";
+import "../styles/Profile.css";
 
 const Profile = () => {
   const {
@@ -67,19 +68,22 @@ const Profile = () => {
     <div>
       <h2>Profile Settings</h2>
       <div>
-        <label>
+        <label className="label1">
           Username:
           <input
+            className="input-profile"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </label>
       </div>
+      <br />
       <div>
-        <label>
+        <label className="label2">
           Email:
           <input
+            className="input-profile1"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -91,22 +95,28 @@ const Profile = () => {
           <div>
             <h4>Preview:</h4>
             <img
+              className="profile-img"
               src={previewUrl}
               alt="Avatar Preview"
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                margin: "10px 0",
-              }}
             />
-            <button onClick={handleAvatarSelect}>Select Avatar</button>
+            <br />
+            <button className="profile-btn" onClick={handleAvatarSelect}>
+              Select Avatar
+            </button>
           </div>
         )}
-        <button onClick={handleAvatarPreview}>Preview Random Avatar</button>
+        <br />
+        <button className="profile-btn" onClick={handleAvatarPreview}>
+          Preview Random Avatar
+        </button>
       </div>
-      <button onClick={handleUpdate}>Update Profile</button>
-      <button onClick={handleDelete} style={{ color: "red" }}>
+      <br />
+      <button className="profile-btn" onClick={handleUpdate}>
+        Update Profile
+      </button>
+      <br />
+      <br />
+      <button className="btn-delete" onClick={handleDelete}>
         Delete Account
       </button>
     </div>

@@ -1,0 +1,35 @@
+
+.input-profile {
+    border-radius: 10px;
+    margin-left: 10px;
+    padding-left: 5px;
+
+}
+
+.input-profile1 {
+    border-radius: 10px;
+    margin-left: 35px;
+    padding-left: 5px;
+}
+
+.profile-btn {
+    background-color: #4675a4;
+    border-radius: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 5px ;
+}
+
+.btn-delete {
+    background-color: #4675a4;
+    border-radius: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin: 5px ;
+    color: #810303;
+}
+
+.profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50px;
+    margin: 10px 0;
+}
