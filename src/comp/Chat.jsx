@@ -14,7 +14,9 @@ const Chat = () => {
     decodedToken,
     users,
     sendInvitation,
-    switchConversation, conversations, currentConversationId
+    switchConversation,
+    conversations,
+    currentConversationId,
   } = useContext(Context);
   const [messageContent, setMessageContent] = useState("");
   const [error, setError] = useState("");
@@ -72,8 +74,11 @@ const Chat = () => {
           value={currentConversationId}
         >
           {conversations.map((conversation) => (
-            <option key={conversation.id} value={conversation.id}>
-              {conversation.name || conversation.id}
+            <option
+              key={conversation.conversationId}
+              value={conversation.conversationId}
+            >
+              {conversation.username}
             </option>
           ))}
         </select>

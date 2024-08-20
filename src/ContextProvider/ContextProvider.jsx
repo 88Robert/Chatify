@@ -39,8 +39,7 @@ const ContextProvider = ({ children }) => {
   useEffect(() => {
     fetchCsrfToken();
     fetchAllUsers();
-    fetchConversations();
-    }, []);
+  }, []);
 
   const handlePreview = () => {
     setAvatarUrl(
@@ -122,6 +121,7 @@ const ContextProvider = ({ children }) => {
       sessionStorage.setItem("jwtToken", token);
       const decodedJwt = decodeJwt(token);
       setDecodedToken(decodedJwt);
+      getConversations(decodedJwt);
       console.log(decodedJwt);
       setIsAuthenticated(true);
       setUsername(username);
@@ -207,17 +207,15 @@ const ContextProvider = ({ children }) => {
 
   const fetchMessages = async (conversationId) => {
     try {
-      const response = await fetch( 
-       //"https://chatify-api.up.railway.app/messages?conversationId=46b5a9e3-afa1-4c40-861c-ad52ca0ff9eb",
-       //"https://chatify-api.up.railway.app/messages",
-        `https://chatify-api.up.railway.app/messages?conversationId=${conversationId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
-          },
-        }
-      );
+      const url = conversationId
+        ? `https://chatify-api.up.railway.app/messages?conversationId=${conversationId}`
+        : "https://chatify-api.up.railway.app/messages";
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
+        },
+      });
       if (!response.ok) throw new Error("Failed to fetch messages.");
       const data = await response.json();
       setMessages(data);
@@ -226,23 +224,15 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  const fetchConversations = async () => {
+  const getConversations = async (decodedJwt) => {
     try {
-      const response = await fetch(`https://chatify-api.up.railway.app/messages?conversationId=46b5a9e3-afa1-4c40-861c-ad52ca0ff9eb`, {
-        method: "GET",  // Explicitly specifying GET method
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch conversations");
+      const conversations = decodedJwt.invite;
+      if (conversations) {
+        const parsedConvos = JSON.parse(conversations);
+        setConversations(parsedConvos);
       }
-
-      const data = await response.json();
-      setConversations(data);  // Assuming the data contains an array of conversations
     } catch (error) {
-      console.error("Error fetching conversations:", error);
+      console.error("Error getting conversations:", error);
     }
   };
 
@@ -250,7 +240,6 @@ const ContextProvider = ({ children }) => {
     setCurrentConversationId(conversationId);
     fetchMessages(conversationId);
   };
-
 
   const sendMessage = async (messageContent) => {
     try {
