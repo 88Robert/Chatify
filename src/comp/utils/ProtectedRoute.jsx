@@ -5,8 +5,11 @@ import Sidebar from "../Sidebar";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useContext(Context);
+  const isAuthed = isAuthenticated
+    ? isAuthenticated
+    : sessionStorage.getItem("isAuthenticated") === "true";
 
-  if (!isAuthenticated) {
+  if (!isAuthed) {
     return <Navigate to="/login" />;
   }
 

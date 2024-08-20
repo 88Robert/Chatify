@@ -4,18 +4,19 @@ import { Context } from "../ContextProvider/ContextProvider";
 import "../styles/Sidebar.css";
 
 const Sidebar = () => {
-  const { handleLogout, username, decodedToken } = useContext(Context);
+  const { handleLogout, decodedToken } = useContext(Context);
   const navigate = useNavigate();
   const location = useLocation();
-  const [pic, setPic] = useState(null);
- 
- 
-  useEffect(() => {
-    if (decodedToken) {
-      setPic(decodedToken.avatar || "default-avatar-url.png"); 
-    }
-  }, [decodedToken]);
+  const [decodedUser, setDecodedUser] = useState(null);
 
+  useEffect(() => {
+    const decoded = sessionStorage.getItem("decodedToken");
+    if (decoded) {
+      setDecodedUser(JSON.parse(decoded));
+    } else {
+      setDecodedUser(decodedToken);
+    }
+  }, []);
 
   const logout = () => {
     handleLogout();
@@ -26,14 +27,16 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-content">
         <div className="user-info">
-          {pic && (
+          {decodedUser && (
             <img
-              src={pic}
+              src={decodedUser.avatar}
               alt="Avatar"
               style={{ width: "50px", height: "50px" }}
             />
           )}
-          <span className="loggedin">Logged in as, {username}!</span>
+          <span className="loggedin">
+            Logged in as, {decodedUser && decodedUser.user}!
+          </span>
         </div>
         <ul>
           {location.pathname === "/chat" && (

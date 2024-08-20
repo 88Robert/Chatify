@@ -36,11 +36,14 @@
 
 .message-right {
   justify-content: flex-end;
+
 }
 
-.message-left {
+.message-left .message-bubble {
   justify-content: flex-start;
-}
+  background-color: #4675a4;
+  color: #f1f1f1;
+  }
 
 .message-avatar {
   width: 40px;
@@ -60,12 +63,13 @@
 }
 
 .message-bubble {
-  background-color: #f1f1f1;
+  background-color: #286099;
   border-radius: 15px;
   padding: 10px;
   max-width: 60%;
   word-wrap: break-word;
   text-align: left;
+  color: #f1f1f1;
 }
 
 .message-bubble strong {

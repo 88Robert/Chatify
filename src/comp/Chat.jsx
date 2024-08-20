@@ -6,6 +6,7 @@ const Chat = () => {
   const {
     username,
     avatarUrl,
+    fetchAllUsers,
     setMessages,
     fetchMessages,
     sendMessage,
@@ -15,29 +16,43 @@ const Chat = () => {
     users,
     sendInvitation,
     switchConversation,
+    getConversations,
     conversations,
     currentConversationId,
   } = useContext(Context);
+
   const [messageContent, setMessageContent] = useState("");
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [decodedUser, setDecodedUser] = useState(null);
 
   useEffect(() => {
-    fetchMessages();
-  }, []);
-
-  useEffect(() => {
-    // Fetch messages when the current conversation changes
     if (currentConversationId) {
+      fetchMessages();
       switchConversation(currentConversationId);
     }
   }, [currentConversationId]);
+
+  useEffect(() => {
+    const decoded = sessionStorage.getItem("decodedToken");
+    if (decoded) {
+      setDecodedUser(JSON.parse(decoded));
+    } else {
+      setDecodedUser(decodedToken);
+    }
+    fetchAllUsers();
+    getConversations(decodedUser || JSON.parse(decoded));
+  }, []);
 
   const handleSendMessage = async () => {
     if (messageContent.trim()) {
       const result = await sendMessage(messageContent);
       if (result.success) {
-        setMessages([...messages, result.latestMessage]);
+        const latestMessage = {
+          ...result.latestMessage,
+          userId: decodedUser.id,
+        };
+        setMessages([...messages, latestMessage]);
         setMessageContent("");
         setError("");
       } else {
@@ -64,7 +79,7 @@ const Chat = () => {
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <h2>Welcome to chat {username}!</h2>
+        <h2>Welcome to chat {decodedUser && decodedUser.user}!</h2>
       </div>
       <div className="conversation-switcher">
         <label htmlFor="conversations">Select a conversation:</label>
@@ -84,35 +99,47 @@ const Chat = () => {
         </select>
       </div>
       <div className="messages-container">
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`message ${
-              username === username ? "message-right" : "message-left"
-            }`}
-          >
-            <img
-              src={decodedToken.avatar || avatarUrl}
-              alt="avatar"
-              className="message-avatar"
-            />
-            <div className="message-content">
-              <strong className="message-username">{username}</strong>
-              <div className="message-bubble">
-                <p>{message.text}</p>
-                {username === username && (
-                  <span
-                    onClick={() => handleDeleteMessage(message.id)}
-                    className="delete-icon"
-                    title="Delete message"
-                  >
-                    &times;
-                  </span>
-                )}
+        {decodedUser &&
+          messages.map((message, index) => (
+            <div
+              key={index}
+              className={`message ${
+                message.userId === decodedUser.id
+                  ? "message-right"
+                  : "message-left"
+              }`}
+            >
+              <img
+                src={
+                  message.userId === decodedUser.id
+                    ? decodedUser.avatar
+                    : message.avatar
+                }
+                alt="avatar"
+                className="message-avatar"
+              />
+              <div className="message-content">
+                <strong className="message-username">
+                  {" "}
+                  {message.userId === decodedUser.id
+                    ? decodedUser.user
+                    : message.userId}
+                </strong>
+                <div className="message-bubble">
+                  <p>{message.text}</p>
+                  {message.userId === decodedUser.id && (
+                    <span
+                      onClick={() => handleDeleteMessage(message.id)}
+                      className="delete-icon"
+                      title="Delete message"
+                    >
+                      &times;
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       <div className="input-container">

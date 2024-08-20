@@ -38,7 +38,6 @@ const ContextProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCsrfToken();
-    fetchAllUsers();
   }, []);
 
   const handlePreview = () => {
@@ -121,9 +120,11 @@ const ContextProvider = ({ children }) => {
       sessionStorage.setItem("jwtToken", token);
       const decodedJwt = decodeJwt(token);
       setDecodedToken(decodedJwt);
+      sessionStorage.setItem("decodedToken", JSON.stringify(decodedJwt));
       getConversations(decodedJwt);
       console.log(decodedJwt);
       setIsAuthenticated(true);
+      sessionStorage.setItem("isAuthenticated", true);
       setUsername(username);
       return { success: true, data };
     } catch (error) {
@@ -251,7 +252,10 @@ const ContextProvider = ({ children }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionStorage.getItem("jwtToken")}`,
           },
-          body: JSON.stringify({ text: messageContent }),
+          body: JSON.stringify({
+            text: messageContent,
+            conversationId: currentConversationId,
+          }),
         }
       );
 
@@ -363,6 +367,8 @@ const ContextProvider = ({ children }) => {
       value={{
         avatarUrl,
         selectedAvatar,
+        fetchAllUsers,
+        getConversations,
         handlePreview,
         handleSelect,
         registerUser,
