@@ -123,7 +123,7 @@ const Chat = () => {
                   {" "}
                   {message.userId === decodedUser.id
                     ? decodedUser.user
-                    : message.userId}
+                    : message.userid}
                 </strong>
                 <div className="message-bubble">
                   <p>{message.text}</p>

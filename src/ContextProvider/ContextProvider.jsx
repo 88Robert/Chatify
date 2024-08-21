@@ -15,6 +15,8 @@ const ContextProvider = ({ children }) => {
   const [conversations, setConversations] = useState([]);
   const [currentConversationId, setCurrentConversationId] = useState("");
 
+  // Hanterar CSRF anrop och hämtar direkt när man startar sidan via en useEffect
+
   const fetchCsrfToken = async () => {
     try {
       const response = await fetch("https://chatify-api.up.railway.app/csrf", {
@@ -40,6 +42,10 @@ const ContextProvider = ({ children }) => {
     fetchCsrfToken();
   }, []);
 
+  // ________________________________________________________________
+
+  // Hanterar att man kan förhandgranska avatar, och att välja avatar.
+
   const handlePreview = () => {
     setAvatarUrl(
       `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 70)}`
@@ -53,6 +59,10 @@ const ContextProvider = ({ children }) => {
     alert("Avatar selected!");
   };
 
+  //__________________________________________________________________
+
+  // Tar ut information från en JWT Token, där man ser all nödvändigt info om en användare.
+
   const decodeJwt = (token) => {
     try {
       const decoded = JSON.parse(
@@ -64,6 +74,10 @@ const ContextProvider = ({ children }) => {
       return null;
     }
   };
+
+  // _______________________________________________________________
+
+  // Registrerar nya användare via API anrop.
 
   const registerUser = async (username, password, email) => {
     try {
@@ -96,6 +110,11 @@ const ContextProvider = ({ children }) => {
       return { success: false, errors: { message: error.message } };
     }
   };
+
+  // ____________________________________________________
+
+  /* Hanterar att logga in med sin CSRF token, och tar emot samt lagrar och decodar JWT Token i session storage. 
+  Och även ser till att man håller sig inloggad efter att man har uppdaterat. */
 
   const loginUser = async (username, password) => {
     try {
@@ -133,6 +152,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  //_____________________________________________________
+
+  // Logga ut function som hanterar att känslig data såsom anvädnarinfo samt token försvinner
+
   const handleLogout = () => {
     sessionStorage.removeItem("jwtToken");
     setIsAuthenticated(false);
@@ -141,6 +164,10 @@ const ContextProvider = ({ children }) => {
     setDecodedToken(null);
     fetchCsrfToken();
   };
+
+  //______________________________________________________
+
+  // HAnterar att ha möjligheten till att kunna uppdatera användarinfo. 
 
   const updateProfile = async (newUsername, newEmail, newAvatar, userId) => {
     try {
@@ -181,6 +208,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  //_______________________________________________________
+
+  //Möjligör att kunna radera inloggad user, och blir då utloggad och din profil försvinner. 
+
   const deleteProfile = async (userId) => {
     try {
       const response = await fetch(
@@ -205,6 +236,10 @@ const ContextProvider = ({ children }) => {
       return { success: false, errors: { message: error.message } };
     }
   };
+
+  //______________________________________________________________
+
+  // Hanterar att kunna hämta ut meddelande som både är lokala samt i en conversation. 
 
   const fetchMessages = async (conversationId) => {
     try {
@@ -273,10 +308,6 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  /*   const deleteMessage = (msgId) => {
-    console.log("Message with id " + msgId + " has been removed.");
-  }; */
-
   const deleteMessage = async (msgId) => {
     try {
       const response = await fetch(
@@ -318,7 +349,7 @@ const ContextProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      setUsers(data); // Store users in state
+      setUsers(data);
     } catch (error) {
       console.error("Failed to fetch users:", error);
     }
