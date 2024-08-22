@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import { Context } from "../../ContextProvider/ContextProvider";
 import Sidebar from "../Sidebar";
 
+// Valt att endast visa siderbar i komponenterna efter man har loggat in.
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useContext(Context);
   const isAuthed = isAuthenticated

@@ -1,7 +1,9 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../ContextProvider/ContextProvider";
-import '../styles/Login.css';
+import "../styles/Login.css";
+
+// Hämtar funktion från context som låter dig att logga in med en skapad användare. Och även ger relevant felmedelande.
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ const Login = () => {
   const [successMessage, setSuccessMessage] = useState("");
 
   const handleLogin = async (event) => {
-    event.preventDefault(); 
+    event.preventDefault();
     const result = await loginUser(username, password);
     if (result.success) {
       setSuccessMessage("Login successful. Redirecting...");
@@ -22,8 +24,12 @@ const Login = () => {
         navigate("/chat");
       }, 3000);
     } else {
-      setErrors(result.errors);
+      setErrors("Invalid username or password.");
       setSuccessMessage("");
+
+      setTimeout(() => {
+        setErrors("");
+      }, 3000);
     }
   };
 
@@ -37,7 +43,8 @@ const Login = () => {
         <h2>Login</h2>
         <br />
         <br />
-        <input className="input"
+        <input
+          className="input"
           type="text"
           placeholder="username"
           value={username}
@@ -45,7 +52,8 @@ const Login = () => {
         />
         <br />
         <br />
-        <input className="input"
+        <input
+          className="input"
           type="password"
           placeholder="password"
           value={password}
@@ -53,24 +61,17 @@ const Login = () => {
         />
         <br />
         <br />
-        <button className="button" type="submit">Login</button>
+        <button className="button" type="submit">
+          Login
+        </button>
         {successMessage && (
           <div style={{ color: "green", marginTop: "20px" }}>
             {successMessage}
           </div>
         )}
+
         {errors && (
-          <div style={{ color: "red", marginTop: "20px" }}>
-            <h4>Errors:</h4>
-            {errors.message && <p>{errors.message}</p>}
-            {errors.errors && (
-              <ul>
-                {Object.keys(errors.errors).map((key) => (
-                  <li key={key}>{errors.errors[key]}</li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <div style={{ color: "red", marginTop: "20px" }}>{errors}</div>
         )}
         <h5>Tillbaka till registrering</h5>
         <button className="button" type="button" onClick={goToRegister}>

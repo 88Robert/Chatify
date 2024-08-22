@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useState } from "react";
 
 export const Context = createContext();
 
+// Har använt denna komponent flitigt genom hela bygget av detta project och hjälp mig att förstå detta mer och hittar styrkan i det.
+
 const ContextProvider = ({ children }) => {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState("");
@@ -97,9 +99,22 @@ const ContextProvider = ({ children }) => {
           }),
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
+
+        if (
+          errorData.errors &&
+          errorData.errors.includes("Username already exists")
+        ) {
+          return { success: false, message: "Username is already registered" };
+        }
+        if (
+          errorData.errors &&
+          errorData.errors.includes("Email already exists")
+        ) {
+          return { success: false, message: "Email is already registered" };
+        }
+
         return { success: false, errors: errorData };
       }
 
@@ -152,12 +167,11 @@ const ContextProvider = ({ children }) => {
     }
   };
 
-  //_____________________________________________________
+  //_____________________________________________________________________________________
 
   // Logga ut function som hanterar att känslig data såsom anvädnarinfo samt token försvinner
 
   const handleLogout = () => {
-
     sessionStorage.removeItem("jwtToken");
     sessionStorage.removeItem("decodedToken");
     sessionStorage.removeItem("isAuthenticated");
@@ -170,7 +184,7 @@ const ContextProvider = ({ children }) => {
 
   //______________________________________________________
 
-  // HAnterar att ha möjligheten till att kunna uppdatera användarinfo.
+  // Hanterar att ha möjligheten till att kunna uppdatera användarinfo.
 
   const updateProfile = async (newUsername, newEmail, newAvatar, userId) => {
     try {
@@ -257,7 +271,7 @@ const ContextProvider = ({ children }) => {
 
   //______________________________________________________________
 
-  // Hanterar att kunna hämta ut meddelande som både är lokala samt i en conversation.
+  // Hanterar att kunna hämta ut meddelande som både är monloga samt i en conversation.
 
   const fetchMessages = async (conversationId) => {
     try {
@@ -278,6 +292,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // _____________________________________________________________
+
+  // Med hjälp av decodedJwt så får man ut converatinsID
+
   const getConversations = async (decodedJwt) => {
     try {
       const conversations = decodedJwt.invite;
@@ -290,10 +308,18 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // ________________________________________________
+
+  // Låter dig att byta konversationer.
+
   const switchConversation = (conversationId) => {
     setCurrentConversationId(conversationId);
     fetchMessages(conversationId);
   };
+
+  //_________________________________________________
+
+  // Skickar meddelande till API
 
   const sendMessage = async (messageContent) => {
     try {
@@ -326,6 +352,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // _____________________________________________________
+
+  // Låter dig som inloggad att radera din skickade meddelande.
+
   const deleteMessage = async (msgId) => {
     try {
       const response = await fetch(
@@ -353,6 +383,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // ______________________________________________________
+
+  // Hämtar alla users från APi
+
   const fetchAllUsers = async () => {
     try {
       const response = await fetch("https://chatify-api.up.railway.app/users", {
@@ -373,6 +407,10 @@ const ContextProvider = ({ children }) => {
     }
   };
 
+  // _________________________________________________
+
+  // Genererar ett conversationId
+
   const generateUUID = () => {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
       /[xy]/g,
@@ -383,6 +421,10 @@ const ContextProvider = ({ children }) => {
       }
     );
   };
+
+  //__________________________________________________
+
+  // Skickar inbjudningar till andra users och skapar ett conversaionsId
 
   const sendInvitation = async (userId) => {
     const conversationId = generateUUID();

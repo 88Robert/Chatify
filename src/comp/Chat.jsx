@@ -2,6 +2,10 @@ import { useContext, useState, useEffect, useRef } from "react";
 import { Context } from "../ContextProvider/ContextProvider";
 import "../styles/Chat.css";
 
+/* // Största komponenten där jag hämtar en massa funktioner samt info från context, 
+för att kunna chatta, bjuda in användare till chatt, och kunna se hela chatkonversationer. 
+Och byta konversationer */
+
 const Chat = () => {
   const {
     username,
@@ -176,7 +180,6 @@ const Chat = () => {
                 Invite
               </button>
               <br />
-             
             </li>
           ))}
         </ul>
@@ -187,17 +190,4 @@ const Chat = () => {
 
 export default Chat;
 
-{
-  /* <img
-            src={message.avatar || avatarUrl}
-            alt="avatar"
-            className="message-avatar"
-           useEffect(() => {
-    if (decodedToken) {
-      setPic(decodedToken.avatar || "default-avatar-url.png"); 
-    }
-  }, [decodedToken]);
-         
-         
-            /> */
-}
+

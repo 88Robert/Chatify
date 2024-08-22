@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Context } from "../ContextProvider/ContextProvider";
 import "../styles/Profile.css";
 
+// I denna komponent hämtar jag funktioner från context, som hjälper mig att kunna ändra och radera den inloggade profilen. 
+
 const Profile = () => {
   const {
     setDecodedToken,
