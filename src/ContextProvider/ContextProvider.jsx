@@ -157,7 +157,10 @@ const ContextProvider = ({ children }) => {
   // Logga ut function som hanterar att känslig data såsom anvädnarinfo samt token försvinner
 
   const handleLogout = () => {
+
     sessionStorage.removeItem("jwtToken");
+    sessionStorage.removeItem("decodedToken");
+    sessionStorage.removeItem("isAuthenticated");
     setIsAuthenticated(false);
     setUsername("");
     setSelectedAvatar("");
@@ -167,7 +170,7 @@ const ContextProvider = ({ children }) => {
 
   //______________________________________________________
 
-  // HAnterar att ha möjligheten till att kunna uppdatera användarinfo. 
+  // HAnterar att ha möjligheten till att kunna uppdatera användarinfo.
 
   const updateProfile = async (newUsername, newEmail, newAvatar, userId) => {
     try {
@@ -200,6 +203,21 @@ const ContextProvider = ({ children }) => {
       setUsername(newUsername);
       setEmail(newEmail);
       setSelectedAvatar(newAvatar);
+      setDecodedToken({
+        ...decodedToken,
+        username: newUsername,
+        email: newEmail,
+        avatar: newAvatar,
+      });
+      sessionStorage.setItem(
+        "decodedToken",
+        JSON.stringify({
+          ...decodedToken,
+          username: newUsername,
+          email: newEmail,
+          avatar: newAvatar,
+        })
+      );
 
       return { success: true, data };
     } catch (error) {
@@ -210,7 +228,7 @@ const ContextProvider = ({ children }) => {
 
   //_______________________________________________________
 
-  //Möjligör att kunna radera inloggad user, och blir då utloggad och din profil försvinner. 
+  //Möjligör att kunna radera inloggad user, och blir då utloggad och din profil försvinner.
 
   const deleteProfile = async (userId) => {
     try {
@@ -239,7 +257,7 @@ const ContextProvider = ({ children }) => {
 
   //______________________________________________________________
 
-  // Hanterar att kunna hämta ut meddelande som både är lokala samt i en conversation. 
+  // Hanterar att kunna hämta ut meddelande som både är lokala samt i en conversation.
 
   const fetchMessages = async (conversationId) => {
     try {
@@ -408,6 +426,7 @@ const ContextProvider = ({ children }) => {
         handleLogout,
         username,
         decodedToken,
+        setDecodedToken,
         updateProfile,
         deleteProfile,
         messages,

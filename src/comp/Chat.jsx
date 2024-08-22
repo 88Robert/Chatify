@@ -175,6 +175,8 @@ const Chat = () => {
               >
                 Invite
               </button>
+              <br />
+             
             </li>
           ))}
         </ul>

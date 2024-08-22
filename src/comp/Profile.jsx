@@ -1,9 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../ContextProvider/ContextProvider";
 import "../styles/Profile.css";
 
 const Profile = () => {
   const {
+    setDecodedToken,
     decodedToken,
     updateProfile,
     deleteProfile,
@@ -18,14 +20,19 @@ const Profile = () => {
   const [previewUrl, setPreviewUrl] = useState("");
   const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (decodedToken) {
-      setUsername(decodedToken.user || "");
-      setEmail(decodedToken.email || "");
-      setAvatar(decodedToken.avatar || "");
-      setUserId(decodedToken.id || "");
+    const decoded = sessionStorage.getItem("decodedToken");
+    if (decoded) {
+      const parsed = JSON.parse(decoded);
+      setDecodedToken(parsed);
+      setUsername(parsed.user || "");
+      setEmail(parsed.email || "");
+      setAvatar(parsed.avatar || "");
+      setUserId(parsed.id || "");
     }
-  }, [decodedToken]);
+  }, []);
 
   const handleAvatarPreview = () => {
     const previewUrl = `https://i.pravatar.cc/150?img=${Math.floor(
@@ -58,6 +65,7 @@ const Profile = () => {
       const result = await deleteProfile(userId);
       if (result.success) {
         alert("Account deleted successfully.");
+        navigate("/login");
       } else {
         alert(`Failed to delete account: ${result.errors.message}`);
       }
@@ -67,6 +75,7 @@ const Profile = () => {
   return (
     <div>
       <h2>Profile Settings</h2>
+
       <div>
         <label className="label1">
           Username:
