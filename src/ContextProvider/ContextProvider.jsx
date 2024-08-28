@@ -301,7 +301,12 @@ const ContextProvider = ({ children }) => {
       const conversations = decodedJwt.invite;
       if (conversations) {
         const parsedConvos = JSON.parse(conversations);
-        setConversations(parsedConvos);
+        const uniqueConvos = parsedConvos.reduce((acc, current) => {
+          const exists = acc.find(item => item.username === current.username);
+          if (!exists) acc.push(current);
+          return acc;
+        }, []);
+        setConversations(uniqueConvos);
       }
     } catch (error) {
       console.error("Error getting conversations:", error);
